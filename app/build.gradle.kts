@@ -12,10 +12,11 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        buildConfigField ("String", "JAMENDO_CLIENT_ID", "c9993a62")
+        buildConfigField("String", "JAMENDO_CLIENT_ID", "\"${project.findProperty("JAMENDO_CLIENT_ID")}\"")
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "JAMENDO_CLIENT_ID", "\"1234567890abcdef\"")
+
     }
 
     buildTypes {
