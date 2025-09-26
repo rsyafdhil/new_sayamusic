@@ -1,10 +1,12 @@
 package com.example.sayamusicc;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,6 +23,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 import com.example.sayamusicc.network.JamendoApi;
 import com.example.sayamusicc.network.RetrofitInstance;
 import com.example.sayamusicc.network.models.Track;
@@ -38,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
     private TracksAdapter adapter;
     private ExoPlayer player;
     private TextView tvNowPlaying;
-    private Button btnPause, btnStop;
+    private Button btnPause, btnStop, btnPlay;
+    private Track currentTrack;
+    String clientId = "c9993a62";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +56,73 @@ public class MainActivity extends AppCompatActivity {
         tvNowPlaying = findViewById(R.id.tvNowPlaying);
         btnPause = findViewById(R.id.btnPause);
         btnStop = findViewById(R.id.btnStop);
+        btnPlay = findViewById(R.id.btnPlay);
 
         adapter = new TracksAdapter(new ArrayList<>());
         rvTracks.setLayoutManager(new LinearLayoutManager(this));
         rvTracks.setAdapter(adapter);
 
         player = new ExoPlayer.Builder(this).build();
+
+        //retrofit setup
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.jamendo.com/v3.0/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        JamendoApi api = retrofit.create(JamendoApi.class);
+
+        // Calls API
+        api.getTracks(clientId, "json", 30, "popularity_total").enqueue(new Callback<TrackResponse>() {
+            @Override
+            public void onResponse(Call<TrackResponse> call, Response<TrackResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Track> results = response.body().getResults();
+                    Log.d("API_RESPONSE", "Jumlah track: " + results.size());
+                    for (Track t : results) {
+                        Log.d("API_RESPONSE", "Track: " + t.getName()
+                                + " | Artist: " + t.getArtistName()
+                                + " | Audio: " + t.getAudio());
+                    }
+                    if (!results.isEmpty()) {
+                        currentTrack = results.get(0);
+                        tvNowPlaying.setText("Ready: " + currentTrack.getName()
+                                + " - " + currentTrack.getArtistName());
+                    }
+                } else {
+                    Log.e("API_RESPONSE", "Response Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TrackResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+        btnPlay.setOnClickListener(v -> {
+            if (currentTrack != null && currentTrack.getAudio() != null)
+            {
+                String audioUrl = currentTrack.getAudio();
+
+                if (audioUrl == null || audioUrl.isEmpty())
+                {
+                    audioUrl = "https://api.jamendo.com/v3.0/tracks/file/?client_id="
+                            + BuildConfig.JAMENDO_CLIENT_ID
+                            + "&id=" + currentTrack.getId()
+                            + "&action=stream";
+                }
+                playUrl(audioUrl, currentTrack.getName() + " - " + currentTrack.getArtistName());
+                Uri uri = Uri.parse(currentTrack.getAudio());
+                MediaItem mediaItem = MediaItem.fromUri(uri);
+                player.setMediaItem(mediaItem);
+                player.prepare();
+                player.play();
+            } else {
+                Toast.makeText(MainActivity.this, "Track Tidak Tersedia", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         btnPause.setOnClickListener(v -> {
             if (player.isPlaying()) {
@@ -78,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadTracks(){
         JamendoApi api = RetrofitInstance.getApi();
         String clientId = BuildConfig.JAMENDO_CLIENT_ID;
-        Call<com.example.sayamusicc.network.models.TrackResponse> call = api.getTracks(clientId, "json", 30, "mp32", "id,name,artist_name,audio,album_image");
+        Call<com.example.sayamusicc.network.models.TrackResponse> call = api.getTracks(clientId, "json", 30, "popularity_total");
         call.enqueue(new Callback<com.example.sayamusicc.network.models.TrackResponse>() {
             @Override
             public void onResponse(Call<com.example.sayamusicc.network.models.TrackResponse> call, Response<com.example.sayamusicc.network.models.TrackResponse> response) {
@@ -103,10 +171,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         MediaItem mediaItem = MediaItem.fromUri(url);
+
         player.setMediaItem(mediaItem);
         player.prepare();
         player.play();
-        tvNowPlaying.setText(title);
+
+        tvNowPlaying.setText("Now Playing: " + title);
         btnPause.setText("Pause");
     }
 

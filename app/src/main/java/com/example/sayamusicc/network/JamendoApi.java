@@ -7,12 +7,13 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface JamendoApi {
-    @GET("tracks")
+    @GET("tracks/")
     Call<TrackResponse> getTracks(
             @Query("client_id") String clientId,
             @Query("format") String format,
             @Query("limit") int limit,
-            @Query("order") String order,
-            @Query("include") String include
+            @Query("order") String order
     );
+
+
 }
