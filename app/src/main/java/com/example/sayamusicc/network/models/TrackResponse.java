@@ -3,7 +3,7 @@ package com.example.sayamusicc.network.models;
 import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
-public class TracksResponse {
+public class TrackResponse {
     @SerializedName("results")
     private List<Track> results;
 
