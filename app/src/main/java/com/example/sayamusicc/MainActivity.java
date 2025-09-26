@@ -9,29 +9,24 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.example.sayamusicc.BuildConfig;
 import com.example.sayamusicc.network.models.Track;
-import com.example.sayamusicc.network.models.TracksResponse;
 import com.bumptech.glide.Glide;
-import com.example.sayamusicc.network.models.Track;
 
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.common.MediaItem;
 import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import com.example.sayamusicc.network.JamendoApi;
+import com.example.sayamusicc.network.RetrofitInstance;
+import com.example.sayamusicc.network.models.Track;
+import com.example.sayamusicc.network.models.TrackResponse;
 
-class TrackResponse{
-    List<com.example.sayamusicc.network.models.Track> results;
-}
 
-class Track{
-    String id;
-    String name;
-    String audio;
-    Artist user;
-}
 
 class Artist {
     String name;
@@ -83,10 +78,10 @@ public class MainActivity extends AppCompatActivity {
     private void loadTracks(){
         JamendoApi api = RetrofitInstance.getApi();
         String clientId = BuildConfig.JAMENDO_CLIENT_ID;
-        Call<TracksResponse> call = api.getTracks(clientId, "json", 30, "mp32", "id,name,artist_name,audio,album_image");
-        call.enqueue(new Callback<TracksResponse>() {
+        Call<com.example.sayamusicc.network.models.TrackResponse> call = api.getTracks(clientId, "json", 30, "mp32", "id,name,artist_name,audio,album_image");
+        call.enqueue(new Callback<com.example.sayamusicc.network.models.TrackResponse>() {
             @Override
-            public void onResponse(Call<TracksResponse> call, Response<TracksResponse> response) {
+            public void onResponse(Call<com.example.sayamusicc.network.models.TrackResponse> call, Response<com.example.sayamusicc.network.models.TrackResponse> response) {
                 if (response.isSuccessful() && response.body() != null){
                     List<Track> tracks = response.body().getResults();
                     adapter.setTracks(tracks);
@@ -96,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<TracksResponse> call, Throwable t) {
+            public void onFailure(Call<com.example.sayamusicc.network.models.TrackResponse> call, Throwable t) {
                 Log.e("MainActivity", "API failure", t);
             }
         });
