@@ -7,5 +7,7 @@ public class TrackResponse {
     @SerializedName("results")
     private List<Track> results;
 
-    public List<Track> getResults(){ return results; }
+    public List<Track> getResults() {
+        return results;
+    }
 }
