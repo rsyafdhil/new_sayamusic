@@ -1,68 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvTracks"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp"/>
-
-    <!-- Simple footer to show playing track -->
+    <!-- Main Content -->
     <LinearLayout
-        android:id="@+id/playerBar"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:background="#22000000"
-        android:gravity="center_vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="50dp"
+        android:orientation="vertical"
+        android:padding="16dp">
 
+        <!-- Header -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎵 SAYAMUSIC 🎵"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Player Controls -->
         <TextView
             android:id="@+id/tvNowPlaying"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Not playing"
-            android:maxLines="1"
-            android:ellipsize="end"/>
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/background_light"
+            android:padding="8dp"
+            android:textAlignment="center" />
 
-        <Button
-            android:id="@+id/btnPause"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pause"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
-        <Button
-            android:id="@+id/btnPlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Play"/>
+            <Button
+                android:id="@+id/btnPlay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="▶"
+                android:layout_marginEnd="4dp" />
 
-        <Button
-            android:id="@+id/btnStop"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Stop" />
+            <Button
+                android:id="@+id/btnPause"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="⏸"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp" />
+
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="⏹"
+                android:layout_marginStart="4dp" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnShuffle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Shuffle: OFF" />
+            android:text="🔀 Shuffle: ON"
+            android:layout_marginBottom="16dp" />
 
-        <Button
-            android:id="@+id/btnNext"
+        <!-- Track List -->
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next Random" />
+            android:text="🔥 Popular Tracks"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTracks"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <!-- Bottom Navigation -->
+<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--        android:id="@+id/bottom_navigation"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="56dp"-->
+<!--        android:background="?attr/colorPrimary"-->
+<!--        app:itemIconTint="@android:color/white"-->
+<!--        app:itemTextColor="@android:color/white"-->
+<!--        app:menu="@menu/bottom_nav_menu" />-->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="89dp"
+        android:background="?attr/colorPrimary"
+        app:itemIconTint="@android:color/white"
+        app:itemTextColor="@android:color/white"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
+
+</LinearLayout>
